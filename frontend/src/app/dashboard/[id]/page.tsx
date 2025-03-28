@@ -44,6 +44,10 @@ interface DynamicRow extends BaseRow {
   [key: string]: string | number | boolean | null | undefined;
 }
 
+interface ProcessedData extends Omit<Table, 'data'> {
+  data: DynamicRow[];
+}
+
 interface Table {
   _id: string;
   name: string;
@@ -181,7 +185,7 @@ export default function TableDetailPage({ params }: PageParams) {
         });
         
         // Ensure all columns are included in the table data and _id is properly set
-        const tableWithAllColumns = {
+        const tableWithAllColumns: ProcessedData = {
           ...data,
           data: data.data.map((row: RawRow, index: number) => {
             // Create a properly typed row object with index signature
