@@ -32,6 +32,7 @@ interface Column {
 interface BaseRow {
   _id: string;
   id?: string;
+  [key: string]: any;
 }
 
 interface RawRow {
