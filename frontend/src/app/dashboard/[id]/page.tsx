@@ -175,7 +175,8 @@ export default function TableDetailPage({ params }: PageParams) {
         const tableWithAllColumns = {
           ...data,
           data: data.data.map((row: any, index: number) => {
-            const rowWithId: { [key: string]: any } = {
+            // Define rowWithId with an index signature to allow dynamic properties
+            const rowWithId: { _id: string; id?: string; [key: string]: string | number | boolean | null | undefined } = {
               _id: row._id || row.id || `temp-${index}`,
               id: row.id,
             };
