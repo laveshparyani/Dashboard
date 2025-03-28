@@ -29,16 +29,19 @@ interface Column {
   isDashboardOnly: boolean;
 }
 
-interface TableRow {
-  _id?: string;
+interface BaseRow {
+  _id: string;
   id?: string;
-  [key: string]: string | number | boolean | null | undefined;
 }
 
-interface RawTableRow {
+interface RawRow {
   _id?: string;
   id?: string;
   [key: string]: any;
+}
+
+interface DynamicRow extends BaseRow {
+  [key: string]: string | number | boolean | null | undefined;
 }
 
 interface Table {
@@ -49,7 +52,7 @@ interface Table {
   updatedAt: string;
   syncError?: string;
   columns: Column[];
-  data: TableRow[];
+  data: DynamicRow[];
   googleSheetId?: string;
   googleSheetUrl?: string;
   lastSynced?: Date;
@@ -57,7 +60,7 @@ interface Table {
 
 interface TableUpdate {
   tableId: string;
-  data: TableRow[];
+  data: DynamicRow[];
 }
 
 interface PageParams {
@@ -180,9 +183,9 @@ export default function TableDetailPage({ params }: PageParams) {
         // Ensure all columns are included in the table data and _id is properly set
         const tableWithAllColumns = {
           ...data,
-          data: data.data.map((row: RawTableRow, index: number) => {
+          data: data.data.map((row: RawRow, index: number) => {
             // Create a properly typed row object with index signature
-            const rowWithId: TableRow = {
+            const rowWithId: DynamicRow = {
               _id: row._id || row.id || `temp-${index}`,
               id: row.id,
             };
@@ -248,7 +251,7 @@ export default function TableDetailPage({ params }: PageParams) {
           if (!prev) return null;
           
           // Ensure all columns are included in the updated data
-          const updatedTableData = updatedData.data.map((row: TableRow) => {
+          const updatedTableData = updatedData.data.map((row: DynamicRow) => {
             const rowWithAllColumns = { ...row };
             prev.columns.forEach((column: Column) => {
               if (!(column.name in rowWithAllColumns)) {
@@ -983,7 +986,7 @@ export default function TableDetailPage({ params }: PageParams) {
             </TableHeader>
             <TableBody>
               {isAddingRow && renderAddRowForm()}
-              {table?.data.map((row: TableRow) => {
+              {table?.data.map((row: DynamicRow) => {
                 const rowId = row._id || row.id || '';
                 return (
                   <TableRow key={rowId} className="hover:bg-gray-50">
