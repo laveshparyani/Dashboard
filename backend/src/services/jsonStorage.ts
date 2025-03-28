@@ -94,7 +94,11 @@ export const mergeDashboardData = (table: ITable) => {
 
     // Merge dashboard-only data with table data
     return table.data.map(row => {
-      const rowId = row._id.toString();
+      const rowId = row._id?.toString() || row.id?.toString();
+      if (!rowId) {
+        return row;
+      }
+      
       const dashboardRowData = tableData[rowId];
       
       if (dashboardRowData) {

@@ -1,7 +1,6 @@
 import { Router, Request, Response } from 'express';
 import { User } from '../models';
 import { authenticateToken } from '../middleware/auth';
-import bcrypt from 'bcrypt';
 
 const router = Router();
 
@@ -12,10 +11,10 @@ router.get('/profile', authenticateToken, async (req: Request, res: Response) =>
     if (!user) {
       return res.status(404).json({ error: 'User not found' });
     }
-    res.json(user);
+    return res.json(user);
   } catch (error) {
     console.error('Error fetching user profile:', error);
-    res.status(500).json({ error: 'Error fetching user profile' });
+    return res.status(500).json({ error: 'Error fetching user profile' });
   }
 });
 
@@ -45,10 +44,10 @@ router.put('/profile', authenticateToken, async (req: Request, res: Response) =>
 
     await user.save();
     const updatedUser = await User.findById(user._id).select('-password');
-    res.json(updatedUser);
+    return res.json(updatedUser);
   } catch (error) {
     console.error('Error updating user profile:', error);
-    res.status(500).json({ error: 'Error updating user profile' });
+    return res.status(500).json({ error: 'Error updating user profile' });
   }
 });
 

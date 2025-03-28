@@ -5,7 +5,7 @@ import { Table } from '../models/Table';
 
 dotenv.config();
 
-async function clearDatabase() {
+export async function clearDatabase() {
   try {
     await mongoose.connect(process.env.MONGODB_URI as string);
     console.log('Connected to MongoDB');
@@ -20,4 +20,9 @@ async function clearDatabase() {
     console.error('Error clearing database:', error);
     process.exit(1);
   }
+}
+
+// Execute if this script is run directly
+if (require.main === module) {
+  clearDatabase();
 } 

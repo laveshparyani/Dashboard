@@ -3,15 +3,11 @@
   "version": "1.0.0",
   "description": "Backend for the dashboard application",
   "main": "dist/index.js",
-  "engines": {
-    "node": ">=18.0.0"
-  },
   "scripts": {
     "start": "node dist/index.js",
     "dev": "ts-node-dev --respawn --transpile-only src/index.ts",
     "build": "tsc",
-    "test": "jest",
-    "postinstall": "npm run build"
+    "test": "jest"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
@@ -25,6 +21,7 @@
     "socket.io": "^4.6.1"
   },
   "devDependencies": {
+    "@types/bcrypt": "^5.0.2",
     "@types/bcryptjs": "^2.4.2",
     "@types/cors": "^2.8.13",
     "@types/express": "^4.17.17",

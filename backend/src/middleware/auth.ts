@@ -41,9 +41,9 @@ export const authenticateToken = async (
       email: user.email
     };
 
-    next();
+    return next();
   } catch (error) {
     console.error('Authentication error:', error);
-    res.status(401).json({ message: 'Invalid token' });
+    return res.status(401).json({ message: 'Invalid token' });
   }
 }; 
