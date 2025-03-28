@@ -29,27 +29,26 @@ interface Column {
   isDashboardOnly: boolean;
 }
 
-interface Row {
+interface TableRow {
   _id?: string;
   id?: string;
   [key: string]: string | number | boolean | null | undefined;
 }
 
-interface TableData {
+interface Table {
   _id: string;
-  id: string;
   name: string;
-  googleSheetId?: string;
-  googleSheetUrl?: string;
-  lastSynced?: Date;
+  description?: string;
+  createdAt: string;
+  updatedAt: string;
   syncError?: string;
   columns: Column[];
-  data: Row[];
+  data: TableRow[];
 }
 
 interface TableUpdate {
   tableId: string;
-  data: Row[];
+  data: TableRow[];
 }
 
 interface PageParams {
@@ -59,7 +58,7 @@ interface PageParams {
 
 export default function TableDetailPage({ params }: PageParams) {
   const { id } = params;
-  const [table, setTable] = useState<TableData | null>(null);
+  const [table, setTable] = useState<Table | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [editingRow, setEditingRow] = useState<string | null>(null);
   const [editedData, setEditedData] = useState<Record<string, any>>({});
@@ -172,11 +171,11 @@ export default function TableDetailPage({ params }: PageParams) {
         // Ensure all columns are included in the table data and _id is properly set
         const tableWithAllColumns = {
           ...data,
-          data: data.data.map((row: Row, index: number) => {
+          data: data.data.map((row: TableRow, index: number) => {
             // Ensure row has _id, if not present generate one
-            const rowWithId: Row = {
+            const rowWithId: { _id: string; id?: string; [key: string]: string | number | boolean | null | undefined } = {
               _id: row._id || row.id || `temp-${index}`,
-              ...row
+              id: row.id,
             };
             
             // Add missing columns with null values
@@ -240,7 +239,7 @@ export default function TableDetailPage({ params }: PageParams) {
           if (!prev) return null;
           
           // Ensure all columns are included in the updated data
-          const updatedTableData = updatedData.data.map((row: any) => {
+          const updatedTableData = updatedData.data.map((row: TableRow) => {
             const rowWithAllColumns = { ...row };
             prev.columns.forEach((column: Column) => {
               if (!(column.name in rowWithAllColumns)) {
@@ -782,7 +781,7 @@ export default function TableDetailPage({ params }: PageParams) {
     return String(value);
   };
 
-  const getConnectionStatus = (table: TableData) => {
+  const getConnectionStatus = (table: Table) => {
     // If no URL is provided
     if (!table.googleSheetUrl) {
       return (
@@ -975,7 +974,7 @@ export default function TableDetailPage({ params }: PageParams) {
             </TableHeader>
             <TableBody>
               {isAddingRow && renderAddRowForm()}
-              {table?.data.map((row: Row) => {
+              {table?.data.map((row: TableRow) => {
                 const rowId = row._id || row.id || '';
                 return (
                   <TableRow key={rowId} className="hover:bg-gray-50">
