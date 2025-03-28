@@ -187,18 +187,17 @@ export default function TableDetailPage({ params }: PageParams) {
         // Ensure all columns are included in the table data and _id is properly set
         const tableWithAllColumns: ProcessedData = {
           ...data,
-          data: data.data.map((row: any, index: number) => {
+          data: data.data.map((row: RawRow, index: number) => {
             // First create the base object with all possible properties
             const rowWithId: DynamicRow = {
               _id: row._id || row.id || `temp-${index}`,
-              id: row.id,
-              ...row, // Spread existing properties
+              ...row
             };
             
             // Add missing columns with null values
             data.columns.forEach((column: Column) => {
               if (!(column.name in rowWithId)) {
-                (rowWithId as any)[column.name] = null;
+                rowWithId[column.name] = null;
               }
             });
             
