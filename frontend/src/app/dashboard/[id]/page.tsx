@@ -41,8 +41,10 @@ interface RawRow {
   [key: string]: any;
 }
 
-interface DynamicRow extends BaseRow {
-  [key: string]: string | number | boolean | null | undefined;
+interface DynamicRow {
+  _id: string;
+  id?: string;
+  [key: string]: any;  // Allow any string key with any value
 }
 
 interface ProcessedData extends Omit<Table, 'data'> {
