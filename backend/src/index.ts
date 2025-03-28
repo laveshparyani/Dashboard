@@ -118,8 +118,12 @@ const connectToMongoDB = async () => {
       throw new Error('Invalid MongoDB URI format. URI must start with mongodb:// or mongodb+srv://');
     }
 
-    await mongoose.connect(mongoURI);
-    console.log('Connected to MongoDB');
+    await mongoose.connect(mongoURI, {
+      serverSelectionTimeoutMS: 5000, // Timeout after 5s instead of 30s
+      socketTimeoutMS: 45000, // Close sockets after 45s of inactivity
+    });
+    
+    console.log('Connected to MongoDB successfully');
     
     // Start periodic Google Sheets sync
     setupGoogleSheetsSync();
@@ -129,8 +133,12 @@ const connectToMongoDB = async () => {
     httpServer.listen(PORT, () => {
       console.log(`Server running on port ${PORT}`);
     });
-  } catch (error) {
-    console.error('MongoDB connection error:', error);
+  } catch (error: any) {
+    if (error.name === 'MongoServerError' && error.code === 8000) {
+      console.error('MongoDB authentication failed. Please check your credentials.');
+    } else {
+      console.error('MongoDB connection error:', error.message);
+    }
     process.exit(1);
   }
 };
