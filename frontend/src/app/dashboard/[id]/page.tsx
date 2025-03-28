@@ -312,7 +312,7 @@ export default function TableDetailPage({ params }: PageParams) {
     }
   };
 
-  const formatDateForInput = (dateStr: string) => {
+  const formatDateForInput = (dateStr: string | null | undefined) => {
     if (!dateStr) return '';
     try {
       const date = new Date(dateStr);
@@ -1012,7 +1012,7 @@ export default function TableDetailPage({ params }: PageParams) {
                           ) : column.type === 'date' ? (
                             <Input
                               type="date"
-                              value={String(editedData[column.name] || formatDateForInput(row[column.name]) || '')}
+                              value={formatDateForInput(editedData[column.name] || row[column.name])}
                               onChange={(e) => handleInputChange(column.name, e.target.value)}
                               className="w-full"
                             />
