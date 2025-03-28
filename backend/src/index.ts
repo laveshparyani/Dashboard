@@ -107,8 +107,18 @@ io.on('connection', (socket) => {
 });
 
 // Connect to MongoDB
-mongoose.connect(process.env.MONGODB_URI as string)
-  .then(() => {
+const connectToMongoDB = async () => {
+  try {
+    const mongoURI = process.env.MONGODB_URI;
+    if (!mongoURI) {
+      throw new Error('MongoDB URI is not defined in environment variables');
+    }
+
+    if (!mongoURI.startsWith('mongodb://') && !mongoURI.startsWith('mongodb+srv://')) {
+      throw new Error('Invalid MongoDB URI format. URI must start with mongodb:// or mongodb+srv://');
+    }
+
+    await mongoose.connect(mongoURI);
     console.log('Connected to MongoDB');
     
     // Start periodic Google Sheets sync
@@ -119,8 +129,11 @@ mongoose.connect(process.env.MONGODB_URI as string)
     httpServer.listen(PORT, () => {
       console.log(`Server running on port ${PORT}`);
     });
-  })
-  .catch((error) => {
+  } catch (error) {
     console.error('MongoDB connection error:', error);
     process.exit(1);
-  }); 
+  }
+};
+
+// Initialize the application
+connectToMongoDB(); 
