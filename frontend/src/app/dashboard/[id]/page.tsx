@@ -26,10 +26,16 @@ import { connectSocket, disconnectSocket, joinTableRoom, leaveTableRoom, socket 
 interface Column {
   name: string;
   type: string;
-  isDashboardOnly?: boolean;
+  isDashboardOnly: boolean;
 }
 
 interface TableRow {
+  _id?: string;
+  id?: string;
+  [key: string]: string | number | boolean | null | undefined;
+}
+
+interface RawTableRow {
   _id?: string;
   id?: string;
   [key: string]: any;
@@ -174,9 +180,9 @@ export default function TableDetailPage({ params }: PageParams) {
         // Ensure all columns are included in the table data and _id is properly set
         const tableWithAllColumns = {
           ...data,
-          data: data.data.map((row: any, index: number) => {
-            // Define rowWithId with an index signature to allow dynamic properties
-            const rowWithId: { _id: string; id?: string; [key: string]: string | number | boolean | null | undefined } = {
+          data: data.data.map((row: RawTableRow, index: number) => {
+            // Create a properly typed row object with index signature
+            const rowWithId: TableRow = {
               _id: row._id || row.id || `temp-${index}`,
               id: row.id,
             };
