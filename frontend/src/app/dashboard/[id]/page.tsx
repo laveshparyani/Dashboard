@@ -40,9 +40,7 @@ interface RawRow {
   [key: string]: any;
 }
 
-interface DynamicRow {
-  _id: string;
-  id?: string;
+interface DynamicRow extends BaseRow {
   [key: string]: string | number | boolean | null | undefined;
 }
 
@@ -191,16 +189,16 @@ export default function TableDetailPage({ params }: PageParams) {
           ...data,
           data: data.data.map((row: any, index: number) => {
             // First create the base object with all possible properties
-            const rowWithId = {
+            const rowWithId: DynamicRow = {
               _id: row._id || row.id || `temp-${index}`,
               id: row.id,
               ...row, // Spread existing properties
-            } as DynamicRow;
+            };
             
             // Add missing columns with null values
             data.columns.forEach((column: Column) => {
               if (!(column.name in rowWithId)) {
-                rowWithId[column.name] = null;
+                (rowWithId as any)[column.name] = null;
               }
             });
             
@@ -554,13 +552,11 @@ export default function TableDetailPage({ params }: PageParams) {
     }
   };
 
-  const handleInputChange = (columnName: string, value: any) => {
-    setEditedData(prev => {
-      const newData = { ...prev };
-      newData[columnName] = value;
-      console.log('Updated edited data:', { columnName, value, newData });
-      return newData;
-    });
+  const handleInputChange = (columnName: string, value: string | number | boolean) => {
+    setEditedData(prev => ({
+      ...prev,
+      [columnName]: value
+    }));
   };
 
   const handleUpdateSheetUrl = async () => {
@@ -1016,14 +1012,14 @@ export default function TableDetailPage({ params }: PageParams) {
                           ) : column.type === 'date' ? (
                             <Input
                               type="date"
-                              value={editedData[column.name] || formatDateForInput(row[column.name]) || ''}
+                              value={String(editedData[column.name] || formatDateForInput(row[column.name]) || '')}
                               onChange={(e) => handleInputChange(column.name, e.target.value)}
                               className="w-full"
                             />
                           ) : (
                             <Input
                               type={column.type === 'number' ? 'number' : 'text'}
-                              value={editedData[column.name] ?? row[column.name] ?? ''}
+                              value={String(editedData[column.name] ?? row[column.name] ?? '')}
                               onChange={(e) => handleInputChange(column.name, e.target.value)}
                               className="w-full"
                             />
