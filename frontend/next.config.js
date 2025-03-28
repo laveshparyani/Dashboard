@@ -1,4 +1,7 @@
-/** @type {import('next').NextConfig} */
+/**
+ * Next.js configuration for the dashboard project
+ * @type {import('next').NextConfig}
+ */
 const nextConfig = {
   reactStrictMode: true,
   swcMinify: true,
