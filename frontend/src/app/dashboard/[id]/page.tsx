@@ -40,7 +40,9 @@ interface RawRow {
   [key: string]: any;
 }
 
-interface DynamicRow extends BaseRow {
+interface DynamicRow {
+  _id: string;
+  id?: string;
   [key: string]: string | number | boolean | null | undefined;
 }
 
@@ -187,12 +189,13 @@ export default function TableDetailPage({ params }: PageParams) {
         // Ensure all columns are included in the table data and _id is properly set
         const tableWithAllColumns: ProcessedData = {
           ...data,
-          data: data.data.map((row: RawRow, index: number) => {
-            // Create a properly typed row object with index signature
-            const rowWithId: DynamicRow = {
+          data: data.data.map((row: any, index: number) => {
+            // First create the base object with all possible properties
+            const rowWithId = {
               _id: row._id || row.id || `temp-${index}`,
               id: row.id,
-            };
+              ...row, // Spread existing properties
+            } as DynamicRow;
             
             // Add missing columns with null values
             data.columns.forEach((column: Column) => {
