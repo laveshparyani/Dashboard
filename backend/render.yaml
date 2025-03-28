@@ -2,6 +2,7 @@ services:
   - type: web
     name: dashboard-backend
     env: node
+    rootDir: .
     buildCommand: npm install && npm run build
     startCommand: npm start
     envVars:
